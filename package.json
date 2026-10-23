@@ -1,0 +1,19 @@
+{
+  "name": "foto-estilo-gta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Transforme sua foto em personagem ilustrado no estilo das capas de jogos de ação urbanos (React + Vite + Express + IA).",
+  "scripts": {
+    "postinstall": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -k -n API,WEB -c magenta,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "start": "npm run start --prefix server",
+    "check": "npm run check --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
