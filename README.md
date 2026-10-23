@@ -131,6 +131,9 @@ Na Vercel não existe disco permanente, então a API guarda as imagens geradas n
 e a galeria "Seus resultados" fica salva no navegador. A foto é comprimida no navegador antes do envio,
 para caber no limite de 4,5 MB por requisição.
 
+O arquivo `vercel.json` na raiz define isso explicitamente: `/api/...` vai para o `server` e todo o resto
+para o `client`.
+
 ### 6.1 Suba o código para o GitHub
 
 ```powershell
