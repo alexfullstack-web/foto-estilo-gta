@@ -123,10 +123,13 @@ Defina `NODE_ENV=production` no `server/.env` para esconder detalhes técnicos d
 
 ## 6. Publicar na Vercel
 
-O site vira **dois projetos Vercel** a partir do mesmo repositório: o frontend (`client`) e a API (`server`).
+A Vercel detecta o `client` (Vite) e o `server` (Express) e publica os dois num **único projeto**
+com o preset **Services**: o site em `/` e a API em `/api`, no mesmo domínio. Por isso não é preciso
+`VITE_API_URL` nem `CORS_ORIGINS`.
+
 Na Vercel não existe disco permanente, então a API guarda as imagens geradas no ImgBB (`RESULT_STORE=imgbb`)
-e a galeria "Seus resultados" fica salva no navegador de cada visitante. A foto é comprimida no navegador
-antes do envio, para caber no limite de 4,5 MB por requisição da Vercel.
+e a galeria "Seus resultados" fica salva no navegador. A foto é comprimida no navegador antes do envio,
+para caber no limite de 4,5 MB por requisição.
 
 ### 6.1 Suba o código para o GitHub
 
@@ -141,11 +144,12 @@ git push -u origin main
 
 O `.gitignore` já impede o envio de `.env`, `node_modules`, `client/dist` e `server/storage`.
 
-### 6.2 Projeto da API
+### 6.2 Crie o projeto
 
 1. Em https://vercel.com/new importe o repositório.
-2. **Root Directory:** `server` (clique em *Edit*). O preset detectado deve ser **Express**.
-3. **Environment Variables:**
+2. Deixe **Root Directory = `./`** e **Application Preset = Services** (não clique em "Import single project").
+   Devem aparecer `client` (Vite) em `/` e `server` (Express) em `/api`.
+3. Em **Environment Variables**, adicione:
 
    | Nome | Valor |
    |---|---|
@@ -155,24 +159,16 @@ O `.gitignore` já impede o envio de `.env`, `node_modules`, `client/dist` e `se
    | `INPUT_HOST` | `imgbb` |
    | `IMGBB_API_KEY` | sua chave do ImgBB |
    | `RESULT_STORE` | `imgbb` |
-   | `CORS_ORIGINS` | deixe `https://exemplo.com` por enquanto (ajusta no 6.4) |
    | `DAILY_LIMIT_PER_IP` | `10` |
    | `GLOBAL_DAILY_LIMIT` | `100` |
 
-4. **Deploy.** Abra `https://SEU-PROJETO-API.vercel.app/api/health`: deve mostrar `"configured": true`.
+4. **Deploy.** Depois abra `https://SEU-PROJETO.vercel.app/api/health`: deve mostrar `"configured": true`.
+   Abra `https://SEU-PROJETO.vercel.app` e teste.
 
-### 6.3 Projeto do site
+Mudou alguma variável depois? Vá em *Deployments → ⋯ → Redeploy*: variáveis só valem a partir do próximo deploy.
 
-1. Em https://vercel.com/new importe **o mesmo repositório de novo**.
-2. **Root Directory:** `client`. O preset detectado deve ser **Vite**.
-3. **Environment Variables:** `VITE_API_URL` = `https://SEU-PROJETO-API.vercel.app` (sem barra no final).
-4. **Deploy.** Anote a URL do site, ex.: `https://foto-estilo-gta.vercel.app`.
-
-### 6.4 Libere o site na API
-
-No projeto da **API** → *Settings → Environment Variables*, troque `CORS_ORIGINS` pela URL do site
-(ex.: `https://foto-estilo-gta.vercel.app`; várias separadas por vírgula) e faça **Redeploy**.
-Sem isso o navegador bloqueia as chamadas e o site mostra "Servidor indisponível".
+> Alternativa: dois projetos separados (Root Directory `server` e `client`). Nesse caso defina
+> `VITE_API_URL` no site e `CORS_ORIGINS` na API com a URL do outro.
 
 ### Observações da Vercel
 

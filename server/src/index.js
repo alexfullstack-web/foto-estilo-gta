@@ -40,7 +40,15 @@ app.use(
   '/api',
   cors((req, cb) => {
     const origin = req.get('Origin');
-    const sameOrigin = origin === `${req.protocol}://${req.get('host')}`;
+    // Mesma origem: host da requisição, host repassado pelo proxy ou domínios da Vercel
+    const hosts = [
+      req.get('host'),
+      req.get('x-forwarded-host'),
+      process.env.VERCEL_URL,
+      process.env.VERCEL_BRANCH_URL,
+      process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    ].filter(Boolean);
+    const sameOrigin = Boolean(origin) && hosts.some((h) => origin === `https://${h}` || origin === `${req.protocol}://${h}`);
     if (!origin || sameOrigin || config.corsOrigins.includes(origin)) {
       return cb(null, { origin: true, allowedHeaders: ['Content-Type', 'X-Client-Id'] });
     }
